@@ -295,6 +295,20 @@
       "type": "string",
       "oneOf": [
         {
+          "description": "allow-share-file -> Enables the share_file command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-share-file"
+          ]
+        },
+        {
+          "description": "deny-share-file -> Denies the share_file command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-share-file"
+          ]
+        },
+        {
           "description": "allow-share-text -> Enables the share_text command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -309,7 +323,7 @@
           ]
         },
         {
-          "description": "default -> This permission set configures which\nsharesheet features are by default exposed.\n\n#### Granted Permissions\n\nIt allows acccess to all sharesheet commands.\n\n",
+          "description": "default -> This permission set configures which\nsharesheet features are by default exposed.\n\n#### Granted Permissions\n\nIt allows access to all sharesheet commands.\n\n",
           "type": "string",
           "enum": [
             "default"

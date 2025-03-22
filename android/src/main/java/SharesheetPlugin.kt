@@ -10,6 +10,11 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.webkit.WebView
 import android.net.Uri
+import android.util.Base64
+import java.io.File
+import java.io.FileOutputStream
+import android.content.Context
+import androidx.core.content.FileProvider
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.TauriPlugin
@@ -23,6 +28,13 @@ class ShareTextOptions {
     var title: String? = null
 }
 
+@InvokeArg
+class ShareFileOptions {
+    lateinit var data: String
+    lateinit var name: String
+    var mimeType: String = "application/octet-stream"
+    var title: String? = null
+}
 
 @TauriPlugin
 class SharesheetPlugin(private val activity: Activity): Plugin(activity) {
@@ -40,8 +52,50 @@ class SharesheetPlugin(private val activity: Activity): Plugin(activity) {
             this.putExtra(Intent.EXTRA_TITLE, args.title)
         }
 
-        val shareIntent = Intent.createChooser(sendIntent, null);
-        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activity.applicationContext?.startActivity(shareIntent);
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        activity.applicationContext?.startActivity(shareIntent)
+    }
+    
+    /**
+     * Open the Sharesheet to share a file
+     */
+    @Command
+    fun shareFile(invoke: Invoke) {
+        val args = invoke.parseArgs(ShareFileOptions::class.java)
+        
+        try {
+            // Decode the base64 string to bytes
+            val decodedBytes = Base64.decode(args.data, Base64.DEFAULT)
+            
+            // Create a temporary file to store the data
+            val tempFile = File(activity.cacheDir, args.name)
+            val outputStream = FileOutputStream(tempFile)
+            outputStream.write(decodedBytes)
+            outputStream.close()
+            
+            // Get the authority from the app's manifest
+            val authority = "${activity.packageName}.fileprovider"
+            
+            // Create a content URI for the file
+            val contentUri = FileProvider.getUriForFile(activity, authority, tempFile)
+            
+            // Create and start the share intent
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = args.mimeType
+                putExtra(Intent.EXTRA_STREAM, contentUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                if (args.title != null) {
+                    putExtra(Intent.EXTRA_TITLE, args.title)
+                }
+            }
+            
+            val chooserIntent = Intent.createChooser(shareIntent, null)
+            chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            activity.applicationContext?.startActivity(chooserIntent)
+            
+        } catch (e: Exception) {
+            invoke.rejectWithError("Failed to share file: ${e.message}")
+        }
     }
 }

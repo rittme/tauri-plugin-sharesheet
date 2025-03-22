@@ -6,10 +6,11 @@ sharesheet features are by default exposed.
 
 #### Granted Permissions
 
-It allows acccess to all sharesheet commands.
+It allows access to all sharesheet commands.
 
 """
 
 permissions = [
   "allow-share-text",
+  "allow-share-file",
 ]
