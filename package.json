@@ -17,6 +17,7 @@
   },
   "scripts": {
     "build": "rollup -c",
+    "prepare": "rollup -c",
     "lint": "eslint .",
     "format": "prettier --write \"./**/*.{cjs,mjs,js,jsx,mts,ts,tsx,html,css,json}\" --ignore-path .prettierignore",
     "format-check": "prettier --check \"./**/*.{cjs,mjs,js,jsx,mts,ts,tsx,html,css,json}\" --ignore-path .prettierignore"
