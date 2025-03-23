@@ -95,7 +95,7 @@ class SharesheetPlugin(private val activity: Activity): Plugin(activity) {
             activity.applicationContext?.startActivity(chooserIntent)
             
         } catch (e: Exception) {
-            invoke.rejectWithError("Failed to share file: ${e.message}")
+            invoke.reject("Failed to share file: ${e.message}", e)
         }
     }
 }
